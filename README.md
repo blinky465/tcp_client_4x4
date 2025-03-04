@@ -38,17 +38,17 @@ B0100 = the square should be at half brightness
 (two other unused bits remain for future development)
 Colour is a hex character representing a value from 0-15, which is the "colour index" to change the LED to
 
-0 = black/off
-1 = red
-2 = green
-3 = blue
-4 = yellow
-5 = magenta
-6 = cyan
-7 = pink
-8 = grey
-9 = white
-15 = full white
+- 0 = black/off
+- 1 = red
+- 2 = green
+- 3 = blue
+- 4 = yellow
+- 5 = magenta
+- 6 = cyan
+- 7 = pink
+- 8 = grey
+- 9 = white
+- 15 = full white
 
 Update applies to only a single square - all other LEDs retain their previous colours/values.
 
