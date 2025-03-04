@@ -69,3 +69,5 @@ So if a magnet were over squares 2, 3, 7 and 10 the response would be Q237A
 F - when a square is set to flash, all flashing squares share the same "timer" that turns them on and off.
 Follow this command with a one- or two-character hexadecimal value, indicating the number of tenths of a second the flash-delay should last
 (so, for example, to set the flash duration to half a second, you would send F5)
+
+![Diagram wiring of underside of 4x4 sensor grid](images/wiring_example.png)
