@@ -29,6 +29,7 @@ extern void setCalibrateRGB();
 extern void flashConnected();
 extern void flashPowerUp();
 extern void handleFlashingSquares(unsigned long mils);
+extern void nextLEDConnect(int dir, int index);
 
 
 #endif

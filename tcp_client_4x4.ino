@@ -22,7 +22,7 @@ WiFiClient client_A;
 
 int connect_fail_count = 0;
 int const MAX_CONNECT_RETRY_COUNT = 5; //20;
-int const MAX_ROUTER_CONNECT_RETRY = 10; //20;
+int const MAX_ROUTER_CONNECT_RETRY = 25;
 int const TCP_HEARTBEAT_INTERVAL = 3000;
 bool router_connected = false;
 bool has_server_ip_address = false;
@@ -42,12 +42,15 @@ WiFiUDP udp_in;
 WiFiUDP udp_out;
 int const MAX_BROADCAST_ATTEMPT_COUNT = 100;
 int const UDP_BROADCAST_REPEAT_DELAY = 1000;
+int const CONNECT_LED_DELAY = 500;
 
 
 // ----------------- general variables and state machine etc. -------------------------
 unsigned long curr_millis = 0;
 unsigned long udp_next = 0;
-
+unsigned long connect_next_led = 0;
+bool showConnectToRouter = true;
+bool showConnectViaTCP = true;
 
 
 void setup() {
@@ -57,7 +60,7 @@ void setup() {
     flashPowerUp();
     initSensors();
     get_ssid_from_eeprom();  
-    get_device_id_from_eeprom();
+    get_device_id_from_eeprom();    
     broadcast_string = "hello " + device_id;
     setup_board_rotation();    
 }
@@ -166,6 +169,14 @@ void UDP_Client_A() {
       udp_out.endPacket();
       udp_next = curr_millis + UDP_BROADCAST_REPEAT_DELAY;
     }
+
+    if(curr_millis > connect_next_led) { 
+      // move on to the next led in the sequence
+      if(showConnectToRouter) { 
+        nextLEDConnect(1, CONNECT_COLOUR_INDEX);
+      }
+      connect_next_led = curr_millis + CONNECT_LED_DELAY;
+    }
   }
 }
 
@@ -189,6 +200,15 @@ void TCP_Client_A() {
         // same IP address, so maybe we should go back to broadcast UDP mode here?
         has_server_ip_address = false;
       }
+
+      if(curr_millis > connect_next_led) { 
+        // move on to the next led in the sequence
+        if(showConnectViaTCP) {           
+          nextLEDConnect(1, ROUTER_COLOUR_INDEX);
+        }
+        connect_next_led = curr_millis + CONNECT_LED_DELAY;
+      }
+      
     }
   } else {
     // Receives data from the server and processes as necessary
@@ -296,7 +316,8 @@ void connect_to_router() {
       WiFi.mode(WIFI_STA);
       WiFi.begin(ssid, pass);
     }
-    delay(1000);
+    delay(500);
+    nextLEDConnect(1, ROUTER_COLOUR_INDEX); // use -1 to run leds in reverse order
     retry_count++;    
   }
   if(WiFi.status() == WL_CONNECTED) {

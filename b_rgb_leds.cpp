@@ -12,12 +12,8 @@ const int square_numbers_1[16] PROGMEM = { 3, 2, 1, 0, 4, 5, 6, 7, 11, 10, 9, 8,
 const int square_numbers_2[16] PROGMEM = { 12, 11, 4, 3, 13, 10, 5, 2, 14, 9, 6, 1, 15, 8, 7, 0 };
 const int square_numbers_3[16] PROGMEM = { 15, 14, 13, 12, 8, 9, 10, 11, 7, 6, 5, 4, 0, 1, 2, 3 };
 
-/*
-extern const int input_numbers_0[16] PROGMEM = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-extern const int input_numbers_1[16] PROGMEM = { 12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3 };
-extern const int input_numbers_2[16] PROGMEM = { 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
-extern const int input_numbers_3[16] PROGMEM = { 3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12 };
-*/
+const int connecting_leds[12] PROGMEM = { 0, 7, 8, 15, 14, 13, 12, 11, 4, 3, 2, 1 };
+int connect_led_index = 0;
 
 unsigned long flashMillis = 0;
 bool flash_flag = false;
@@ -229,4 +225,15 @@ void handleFlashingSquares(unsigned long mils) {
     flashLEDs();
     flashMillis = mils + (flash_timeout * 100);     
   }
+}
+
+void nextLEDConnect(int dir, int col_index) { 
+  connect_led_index += dir;
+  if(connect_led_index < 0)  { connect_led_index = 11; }
+  if(connect_led_index > 11) { connect_led_index = 0; }
+  
+  clearLEDs();  
+  int k = connecting_leds[connect_led_index];  
+  led[k] = col_index;
+  updateLEDs();
 }

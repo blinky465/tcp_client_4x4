@@ -15,9 +15,13 @@
 // ------------------- edit these to match your own router -----------------
 
     #define SSID_ROUTER "PLUSNET-FSCFWN"
-    #define PWD_ROUTER "pfJdakNqMX7vMu"
+    #define PWD_ROUTER "pfJdakNqMX7vMu_"
 
 // -------------------------------------------------------------------------
+
+#define CONNECT_COLOUR_INDEX 6
+#define ROUTER_COLOUR_INDEX 7
+
 
 extern int board_rotation;
 extern bool calibrating;
