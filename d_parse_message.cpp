@@ -118,6 +118,16 @@ extern void parseMessage(String msg) {
       flash_timeout = k;
     break;
 
+    case 'S':
+      // settings as a hex value/bitmask
+      // since this gets decoded when it's read back from eeprom, 
+      // we can just write the string straight to eeprom as a word/string
+      // and then call the function to read it again
+      write_settings_to_eeprom(msg.substring(1,3));
+      delay(10);
+      get_settings_from_eeprom();
+    break;
+
   }  
     
 

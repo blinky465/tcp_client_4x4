@@ -6,6 +6,11 @@ bool calibrating = false;
 const String firmware_version = "v1.01";
 String device_id = "";
 String broadcast_string = "";
+String settings_bmask = "";
+int settings_bitmask = 0;
+bool showConnectToRouter = true;
+bool showConnectViaTCP = true;
+bool showWhenConnected = true;
 
 // --------------- this is for connecting to the router ------------------------------
 String ssid =  SSID_ROUTER;  
@@ -76,4 +81,44 @@ bool isEmpty(String s) {
   bool b = false;
   if(c < 0x20 || c > 128) { b = true; }
   return(b);
+}
+
+
+void get_settings_from_eeprom() { 
+  settings_bmask = readWord(110);
+  if(settings_bmask.length() > 2 || settings_bmask.length() < 1){ settings_bmask = "00"; }  
+  
+  // turn the settings hex string into an int value so we can apply bitmasking correctly
+  char c = settings_bmask[0];
+  int i = indexFromHex(c);
+  i = i << 4;
+  c = settings_bmask[1];
+  int k = indexFromHex(c);  
+  settings_bitmask = i + k;
+
+  if ((settings_bitmask & B00000001) > 0 ) {
+    showConnectToRouter = true;
+  } else { 
+    showConnectToRouter = false;
+  }
+  if ((settings_bitmask & B00000010) > 0 ) {
+    showConnectViaTCP = true;
+  } else { 
+    showConnectViaTCP = false;
+  } 
+  if ((settings_bitmask & B00000100) > 0 ) {
+    showWhenConnected = true;
+  } else { 
+    showWhenConnected = false;
+  } 
+  Serial.print("settings as string: ");
+  Serial.println(settings_bmask);
+  Serial.print("settings as int value: ");
+  Serial.println(settings_bitmask);
+}
+
+void write_settings_to_eeprom(String hex) { 
+  Serial.print("write value to eeprom: ");
+  Serial.println(hex);
+  writeWord(hex, 110);
 }

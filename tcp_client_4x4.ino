@@ -49,8 +49,6 @@ int const CONNECT_LED_DELAY = 500;
 unsigned long curr_millis = 0;
 unsigned long udp_next = 0;
 unsigned long connect_next_led = 0;
-bool showConnectToRouter = true;
-bool showConnectViaTCP = true;
 
 
 void setup() {
@@ -60,7 +58,8 @@ void setup() {
     flashPowerUp();
     initSensors();
     get_ssid_from_eeprom();  
-    get_device_id_from_eeprom();    
+    get_device_id_from_eeprom(); 
+    get_settings_from_eeprom();   
     broadcast_string = "hello " + device_id;
     setup_board_rotation();    
 }
@@ -172,7 +171,7 @@ void UDP_Client_A() {
 
     if(curr_millis > connect_next_led) { 
       // move on to the next led in the sequence
-      if(showConnectToRouter) { 
+      if(showConnectViaTCP) { 
         nextLEDConnect(1, CONNECT_COLOUR_INDEX);
       }
       connect_next_led = curr_millis + CONNECT_LED_DELAY;
@@ -185,8 +184,11 @@ void TCP_Client_A() {
   if (!client_A.connected()) {
     if (client_A.connect(serverIP, portNumber)) {                                         // Connects to the server
       Serial.print("Connected to Gateway IP = "); Serial.println(serverIP);
+      resetLEDs();
       connect_fail_count = 0;
-      flashConnected();      
+      if(showWhenConnected) { 
+        flashConnected();      
+      }
       
     } else {
       Serial.print("Could NOT connect to Gateway IP = "); Serial.println(serverIP);
@@ -317,7 +319,11 @@ void connect_to_router() {
       WiFi.begin(ssid, pass);
     }
     delay(500);
-    nextLEDConnect(1, ROUTER_COLOUR_INDEX); // use -1 to run leds in reverse order
+    
+    if(showConnectToRouter) { 
+      nextLEDConnect(1, ROUTER_COLOUR_INDEX); // use -1 to run leds in reverse order
+    }
+    
     retry_count++;    
   }
   if(WiFi.status() == WL_CONNECTED) {
@@ -326,6 +332,8 @@ void connect_to_router() {
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
     router_connected = true;
+    resetLEDs();
+    
   } else { 
     Serial.println("Cannot connect to router");
      // go into AP access mode so we can connect to this device

@@ -27,8 +27,14 @@ extern int board_rotation;
 extern bool calibrating;
 extern const String firmware_version;
 extern String device_id;
+extern String settings_bmask;
 extern String broadcast_string;
 extern int state;
+extern int settings_bitmask;
+
+extern bool showConnectToRouter;
+extern bool showConnectViaTCP;
+extern bool showWhenConnected;
 
 extern String ssid;
 extern String pass;
@@ -38,6 +44,7 @@ extern String valToHex(int i);
 extern void writeWord(String myWord, int addr);
 extern String readWord(int addr);
 extern bool isEmpty(String s);  
-
+extern void get_settings_from_eeprom();
+extern void write_settings_to_eeprom(String hex);
 
 #endif
