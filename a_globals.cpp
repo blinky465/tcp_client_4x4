@@ -10,7 +10,9 @@ String settings_bmask = "";
 int settings_bitmask = 0;
 bool showConnectToRouter = true;
 bool showConnectViaTCP = true;
-bool showWhenConnected = true;
+bool flashWhenConnected = true;
+bool flashOnBoot = true;
+bool flashOnMove = true;
 
 // --------------- this is for connecting to the router ------------------------------
 String ssid =  SSID_ROUTER;  
@@ -94,7 +96,7 @@ void get_settings_from_eeprom() {
   i = i << 4;
   c = settings_bmask[1];
   int k = indexFromHex(c);  
-  settings_bitmask = i + k;
+  settings_bitmask = k + i;
 
   if ((settings_bitmask & B00000001) > 0 ) {
     showConnectToRouter = true;
@@ -107,10 +109,21 @@ void get_settings_from_eeprom() {
     showConnectViaTCP = false;
   } 
   if ((settings_bitmask & B00000100) > 0 ) {
-    showWhenConnected = true;
+    flashWhenConnected = true;
   } else { 
-    showWhenConnected = false;
+    flashWhenConnected = false;
   } 
+  if ((settings_bitmask & B00001000) > 0 ) {
+    flashOnBoot = true;
+  } else { 
+    flashOnBoot = false;
+  } 
+  if ((settings_bitmask & B00010000) > 0 ) {
+    flashOnMove = true;
+  } else { 
+    flashOnMove = false;
+  } 
+  
   Serial.print("settings as string: ");
   Serial.println(settings_bmask);
   Serial.print("settings as int value: ");

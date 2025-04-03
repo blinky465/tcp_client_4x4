@@ -35,7 +35,7 @@ String incomingMessageTCP = "";
 #define UDP_TX_PACKET_MAX 32
 const IPAddress broadcastIP(255,255,255,255);
 
-String acknowledgement = "ACK";
+String acknowledgement = "ACK ";
 char packetBufferUDP[UDP_TX_PACKET_MAX]; // buffer to hold incoming UDP packet (server response)
 char ReplyBufferUDP[] = "????????????";                  
 WiFiUDP udp_in;
@@ -53,13 +53,15 @@ unsigned long connect_next_led = 0;
 
 void setup() {
     delay(200); // delay to allow the serial port to purge
+    get_settings_from_eeprom();
+    get_device_id_from_eeprom();
+    get_ssid_from_eeprom();  
+    
     setup_serial_port();
     initLEDs();
     flashPowerUp();
-    initSensors();
-    get_ssid_from_eeprom();  
-    get_device_id_from_eeprom(); 
-    get_settings_from_eeprom();   
+    initSensors();    
+            
     broadcast_string = "hello " + device_id;
     setup_board_rotation();    
 }
@@ -146,7 +148,8 @@ void UDP_Client_A() {
 
       // send an acknowledgement back
       udp_out.beginPacket(serverIP, portUDP_Out); 
-      udp_out.write(acknowledgement.c_str());
+      String ack = acknowledgement + device_id;
+      udp_out.write(ack.c_str());
       udp_out.endPacket();
       udp_next = curr_millis + UDP_BROADCAST_REPEAT_DELAY;
       
@@ -186,7 +189,7 @@ void TCP_Client_A() {
       Serial.print("Connected to Gateway IP = "); Serial.println(serverIP);
       resetLEDs();
       connect_fail_count = 0;
-      if(showWhenConnected) { 
+      if(flashWhenConnected) { 
         flashConnected();      
       }
       

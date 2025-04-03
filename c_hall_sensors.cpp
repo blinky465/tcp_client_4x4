@@ -40,9 +40,6 @@ int i = 0;
 int j = 0;
 int k = 0;
 
-// used if we want to flash a square and await confirmation
-bool flash_and_confirm = true;
-
 void initSensors() { 
   // make all the sensor row pins output pins
   // make all the sensor read pins input, with pull-up
@@ -117,7 +114,7 @@ void sendSensorMessage(int row, int col, int dir) {
 
   idx = (row * 4) + col; // this is the same as input_numbers_0[idx]  
   idx = getInputIndex(idx, board_rotation);        
-  sendMessageTCP("S" + valToHex(idx) + String(dir));
+  sendMessageTCP("M" + valToHex(idx) + String(dir));
 }
 
 void readSensors(int idx) { 
@@ -174,7 +171,7 @@ void readSensors(int idx) {
               // or one if this bit has just gone low to high
               sendSensorMessage(curr_row, i, h);
 
-              if(h == 1 && flash_and_confirm) { 
+              if(h == 1 && flashOnMove) { 
                 // flash the square we've just put a piece down on
                 idx = (curr_row * 4) + i;
                 idx = square_numbers_0[idx];

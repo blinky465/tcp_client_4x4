@@ -4,6 +4,14 @@
 #include "b_rgb_leds.h"
 #include "c_hall_sensors.h"
 
+void sendSettings() { 
+  // send the bitmasked settings value back to the server
+  Serial.print("Current settings value: ");
+  Serial.println(settings_bmask);
+  String tcp_out = "S" + settings_bmask;
+  sendMessageTCP(tcp_out);  
+}
+
 extern void parseMessage(String msg) { 
   int pos = 0;
   int len = msg.length();
@@ -82,6 +90,7 @@ extern void parseMessage(String msg) {
       // this is an acknowledgement after sending a message to say a 
       // square had been occupied (we may have set the square to purple,
       // to this is to say "put the target square back to it's own colour)
+      if(!flashOnMove) { return; }
       c = msg[1];
       col_idx = indexFromHex(c);      
       unHighlightLED(col_idx);
@@ -123,12 +132,27 @@ extern void parseMessage(String msg) {
       // since this gets decoded when it's read back from eeprom, 
       // we can just write the string straight to eeprom as a word/string
       // and then call the function to read it again
-      write_settings_to_eeprom(msg.substring(1,3));
-      delay(10);
+      c = msg[1];
+      if(c!='?') { 
+        write_settings_to_eeprom(msg.substring(1,3));
+        delay(10);
+      }
       get_settings_from_eeprom();
+      if(c=='?'){
+        sendSettings();
+      }
     break;
 
-  }  
-    
-
+    case 'I':
+      // set the device id to the value in the message
+      // (typically this is a hex representation of an 8-bit value
+      //  but in truth, it's just a two-character string)      
+      device_id = msg.substring(1,3);
+      Serial.print("new device id: ");
+      Serial.println(device_id);
+      // write the new device id to eeprom
+      writeWord(device_id, 100);
+      
+    break;
+  }      
 }

@@ -169,13 +169,15 @@ void flashConnected() {
 
 void flashPowerUp(){ 
   resetLEDs();
-  led[0] = 2;
-  led[3] = 2;
-  led[15] = 2;
-  led[12] = 2;
-  updateLEDs(); 
-  delay(100);
-  resetLEDs(); 
+  if(flashOnBoot){ 
+    led[0] = 1;
+    led[3] = 1;
+    led[15] = 1;
+    led[12] = 1;
+    updateLEDs(); 
+    delay(100);
+    resetLEDs(); 
+  }
 }
 
 void flashLEDs() { 

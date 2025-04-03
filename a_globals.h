@@ -34,7 +34,9 @@ extern int settings_bitmask;
 
 extern bool showConnectToRouter;
 extern bool showConnectViaTCP;
-extern bool showWhenConnected;
+extern bool flashWhenConnected;
+extern bool flashOnBoot;
+extern bool flashOnMove;
 
 extern String ssid;
 extern String pass;
